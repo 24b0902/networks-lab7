@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#define PORT 5000
+#define PORT 4559
 #define EXPECTED_CLIENTS 3
 #define SIZE 1024
 
