@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <time.h>
 
-#define PORT 5207
+#define PORT 5000
 #define EXPECTED_CLIENTS 26
 #define SIZE 1024
 
