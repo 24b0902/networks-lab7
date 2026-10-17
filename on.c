@@ -9,7 +9,6 @@
 #include <time.h>
 
 #define PORT 5000
-#define EXPECTED_CLIENTS 3
 #define SIZE 1024
 
 
@@ -18,72 +17,6 @@ typedef struct {
     int udp_port;
 } VNInfo;
 
-int read_file(const char* filename, int costs[EXPECTED_CLIENTS][EXPECTED_CLIENTS]){
-    FILE *file = fopen(filename, "r");
-    if(!file){
-        perror("file not opening");
-        return -1;
-    }
-    
-    char line[SIZE];
-    int row=0;
-
-    while(fgets(line,sizeof(line),file)){
-        if(line[0]=='#' || line[0]=='\n' || line[0]=='\r'){
-            continue;
-        }
-        int col = row+1;
-        char *cost = strtok(line, " \t\n\r");
-
-        while(cost!=NULL){
-            costs[row][col]=atoi(cost);
-            costs[col][row]=atoi(cost);
-            col++;
-            cost=strtok(NULL, " \t\n\r");
-        }
-        row++;
-    }
-    fclose(file);
-    if(row<=0){
-        printf("No valid data in file.\n");
-        return -1;
-    }
-    return 0;
-}
-
-void send_ls_msgs(int clients[], VNInfo vn_info[], int costs[EXPECTED_CLIENTS][EXPECTED_CLIENTS]){
-    for(int i=0;i<EXPECTED_CLIENTS; i++){
-        char msg[SIZE];
-        int offset=0;
-
-        for(int j=0;j<EXPECTED_CLIENTS;j++){
-            if(i==j || costs[i][j]>0){
-
-                char node_name = 'A'+j;
-                msg[offset++]=node_name;
-
-                struct in_addr ip_addr;
-                inet_pton(AF_INET, vn_info[j].ip, &ip_addr);
-                uint32_t s_addr = ip_addr.s_addr;
-                memcpy(msg+offset, &s_addr, sizeof(s_addr));
-                offset+=sizeof(s_addr);
-
-                uint16_t udp_port = htons(vn_info[j].udp_port);
-                memcpy(msg+offset, &udp_port, sizeof(udp_port));
-                offset+=sizeof(udp_port);
-
-                int32_t cost = htonl(costs[i][j]);
-                memcpy(msg+offset, &cost, sizeof(cost));
-                offset+=sizeof(cost);
-            }
-        }
-        if(send(clients[i], msg, offset, 0)<0){
-            perror("could not send link-state message");
-        }else{
-            printf("Sent link-state message to VNS %c\n", 'A'+i);
-        }
-    }
-}
 
 int main(int argc, char* argv[]) {
     if(argc!=2){
@@ -91,12 +24,66 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-
+    int num_clients=1;
+    FILE *file = fopen(argv[1], "r");
+    if(!file){
+        perror("file not opening");
+        return -1;
+    }
+    char line1[SIZE];
+    while(fgets(line1,sizeof(line1),file)){
+        if(line1[0]=='#' || line1[0]=='\n' || line1[0]=='\r'){
+            continue;
+        }
+        num_clients+=1;
+    }
+    fclose(file);
+    
+    const int EXPECTED_CLIENTS = num_clients;
     int server, clients[EXPECTED_CLIENTS];
     struct sockaddr_in addr;
     socklen_t len = sizeof(addr);
     VNInfo vn_info[EXPECTED_CLIENTS];
-    int costs[EXPECTED_CLIENTS][EXPECTED_CLIENTS]={0};
+    int costs[EXPECTED_CLIENTS][EXPECTED_CLIENTS];
+    for (int i = 0; i < EXPECTED_CLIENTS; i++) {
+        for (int j = 0; j < EXPECTED_CLIENTS; j++) {
+            costs[i][j] = 0;
+        }
+    }
+
+
+    int read_file(const char* filename, int costs[EXPECTED_CLIENTS][EXPECTED_CLIENTS]){
+        FILE *file = fopen(filename, "r");
+        if(!file){
+            perror("file not opening");
+            return -1;
+        }
+        
+        char line[SIZE];
+        int row=0;
+
+        while(fgets(line,sizeof(line),file)){
+            if(line[0]=='#' || line[0]=='\n' || line[0]=='\r'){
+                continue;
+            }
+            int col = row+1;
+            char *cost = strtok(line, " \t\n\r");
+
+            while(cost!=NULL){
+                costs[row][col]=atoi(cost);
+                costs[col][row]=atoi(cost);
+                col++;
+                cost=strtok(NULL, " \t\n\r");
+            }
+            row++;
+        }
+        fclose(file);
+        if(row<=0){
+            printf("No valid data in file.\n");
+            return -1;
+        }
+        return 0;
+    }
 
     int num = read_file(argv[1], costs);
     if(num<0){
@@ -167,6 +154,41 @@ int main(int argc, char* argv[]) {
 
     printf("\nAll VNS connection messages received.\n");
     printf("Sending link-state messages...\n");
+
+
+    void send_ls_msgs(int clients[], VNInfo vn_info[], int costs[EXPECTED_CLIENTS][EXPECTED_CLIENTS]){
+        for(int i=0;i<EXPECTED_CLIENTS; i++){
+            char msg[SIZE];
+            int offset=0;
+
+            for(int j=0;j<EXPECTED_CLIENTS;j++){
+                if(i==j || costs[i][j]>0){
+
+                    char node_name = 'A'+j;
+                    msg[offset++]=node_name;
+
+                    struct in_addr ip_addr;
+                    inet_pton(AF_INET, vn_info[j].ip, &ip_addr);
+                    uint32_t s_addr = ip_addr.s_addr;
+                    memcpy(msg+offset, &s_addr, sizeof(s_addr));
+                    offset+=sizeof(s_addr);
+
+                    uint16_t udp_port = htons(vn_info[j].udp_port);
+                    memcpy(msg+offset, &udp_port, sizeof(udp_port));
+                    offset+=sizeof(udp_port);
+
+                    int32_t cost = htonl(costs[i][j]);
+                    memcpy(msg+offset, &cost, sizeof(cost));
+                    offset+=sizeof(cost);
+                }
+            }
+            if(send(clients[i], msg, offset, 0)<0){
+                perror("could not send link-state message");
+            }else{
+                printf("Sent link-state message to VNS %c\n", 'A'+i);
+            }
+        }
+    }
 
     send_ls_msgs(clients, vn_info, costs);
 
