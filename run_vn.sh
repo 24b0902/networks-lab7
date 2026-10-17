@@ -1,15 +1,15 @@
 #!/bin/bash
 
-ARG1="common_arg1"
-ARG2="common_arg2"
+ARG1="172.30.48.140"
+ARG2="5000"
 
 THIRD_ARGS=(
-    "1"
-    "2"
-    "3"
+    "172.30.48.140"
+    "172.30.48.140"
+    "172.30.48.140"
 )
 
-for i in {0..25}
+for i in {0..2}
 do
     PORT=$((5001 + i))
 
@@ -20,4 +20,4 @@ done
 
 wait
 
-echo "All 26 VN processes have finished."
+echo "All 3 VN processes have finished."
