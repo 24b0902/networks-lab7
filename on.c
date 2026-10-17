@@ -9,7 +9,7 @@
 #include <time.h>
 
 #define PORT 5000
-#define EXPECTED_CLIENTS 26
+#define EXPECTED_CLIENTS 3
 #define SIZE 1024
 
 
@@ -57,7 +57,7 @@ void send_ls_msgs(int clients[], VNInfo vn_info[], int costs[EXPECTED_CLIENTS][E
         int offset=0;
 
         for(int j=0;j<EXPECTED_CLIENTS;j++){
-            if(i==j || costs[i][j]==0){
+            if(i==j || costs[i][j]>0){
 
                 char node_name = 'A'+j;
                 msg[offset++]=node_name;

@@ -32,9 +32,9 @@ def main():
         print(f"tcp_socket failed:{e}")
     tcp_socket.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
     try:
-        tcp_socket.bind((on_ip,on_port))
+        tcp_socket.connect((on_ip,on_port))
     except Exception as e:
-        print(f"couldn't bind tcp_socket:{e}")
+        print(f"couldn't connect tcp_socket:{e}")
         
     
     try:
@@ -67,7 +67,7 @@ def main():
             packet +=nei_data['cost'].to_bytes(2, 'big', signed=True)
             
         for nei_id, nei_data in valid_neighbors.items():
-            dest_addr={nei_data['ip'],nei_data['udp_port']}
+            dest_addr=(nei_data['ip'],nei_data['udp_port'])
             udp_socket.sendto(packet,dest_addr)
             
         print(f"Sent LSP (Seq: {seq_num}) to neighbors: {list(valid_neighbors.keys())}")
@@ -93,8 +93,8 @@ def main():
                 last_period_time=time.time()
                 
             for s in incoming_msgs:
-                if s in tcp_socket:
-                    data=tcp_socket.rev(1024)
+                if s is tcp_socket:
+                    data=tcp_socket.recv(1024)
                     if not data:
                         print(f"empty data from on")
                         return
@@ -124,16 +124,26 @@ def main():
                         }
                         neighbors_info.append(f"{nodeId}={node_cost}")
                     neighbors=new_neighbors
-                    print(f"msg received from on")
+                    print(f"msg received from on: {', '.join(neighbors_info)}")
                     sys.stdout.flush()
                     seq_num=lsp_seq(seq_num)
                     
                 elif s is udp_socket:
-                    data,sender=udp_socket.recv(1024)
+                    data,sender=udp_socket.recvfrom(1024)
                     if len(data)>= 7:
                         origin_bytes,r_seq,num_n=struct.unpack('!cIH',data[:7])
                         origin=origin_bytes.decode('ascii')
-                        print(f"received lsp from node {origin},seq:{r_seq},neighbors:{num_n}")
+                        costs_received=[]
+                        offset=7
+                        for _ in range(num_n):
+                            if offset+3>len(data):
+                                break
+                            id1=data[offset:offset+1].decode('ascii')
+                            cost1=int.from_bytes(data[offset+1:offset+3],'big',signed=True)
+                            costs_received.append(f"{id1}={cost1}")
+                            offset+=3
+
+                        print(f"received lsp from node {origin},seq:{r_seq},neighbors:{num_n},costs: {', '.join(costs_received)}")
                         sys.stdout.flush()
     except KeyboardInterrupt:
         print(f"shutdowm vn node")
