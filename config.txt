@@ -7,6 +7,6 @@
 # Tabs at the beginning of a line are to be ignored (for readability - see below) 
 # First row is for virtual node A, next for B, and so on # Example matrix for the example network shown in instructions is below 
 # Costs from A to B, C
-10       -1
+1       -1
 # Costs from B to C,; note the tab at the beginning, to overall give view of upper-right triangle        
 2

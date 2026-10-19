@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     }
     char line1[SIZE];
     while(fgets(line1,sizeof(line1),file)){
-        if(line1[0]=='#' || line1[0]=='\n' || line1[0]=='\r'){
+        if(line1[0]=='#' || line1[0]=='\n'){
             continue;
         }
         num_clients+=1;
@@ -63,17 +63,17 @@ int main(int argc, char* argv[]) {
         int row=0;
 
         while(fgets(line,sizeof(line),file)){
-            if(line[0]=='#' || line[0]=='\n' || line[0]=='\r'){
+            if(line[0]=='#' || line[0]=='\n'){
                 continue;
             }
             int col = row+1;
-            char *cost = strtok(line, " \t\n\r");
+            char *cost = strtok(line, " \t\n");
 
             while(cost!=NULL){
                 costs[row][col]=atoi(cost);
                 costs[col][row]=atoi(cost);
                 col++;
-                cost=strtok(NULL, " \t\n\r");
+                cost=strtok(NULL, " \t\n");
             }
             row++;
         }
