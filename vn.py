@@ -50,14 +50,28 @@ def main():
     origin_id=None
     seq_num=0
     neighbors={}
-    
+
+    ls_info={}
+
+
+    def print_ls_info(origin_id, ls_info):
+        print(f"Current Link State Information at node {origin_id}:")
+        for node, info in ls_info.items():
+            print(f"Node {node}: Seq: {info['seq']}, Costs: {', '.join(info['costs'])}")
+        print()
+        sys.stdout.flush()
+        
     def lsp_seq(seq_num):
         if not origin_id:
             return seq_num
         
         seq_num+=1
         valid_neighbors={k: v for k, v in neighbors.items() if v['cost']>0 and k != origin_id}
-        
+        local_costs = [f"{nei_id}={nei_data['cost']}" for nei_id, nei_data in valid_neighbors.items()]
+        ls_info[origin_id] = {
+            'seq': seq_num,
+            'costs': local_costs
+        }
         packet = origin_id.encode('ascii')
         packet += seq_num.to_bytes(4, 'big')
         packet += len(valid_neighbors).to_bytes(2,'big')
@@ -69,8 +83,10 @@ def main():
         for nei_id, nei_data in valid_neighbors.items():
             dest_addr=(nei_data['ip'],nei_data['udp_port'])
             udp_socket.sendto(packet,dest_addr)
-            
+
+        print_ls_info(origin_id, ls_info)
         print(f"Sent LSP (Seq: {seq_num}) to neighbors: {list(valid_neighbors.keys())}")
+        print()
         sys.stdout.flush()
         return seq_num
     
@@ -88,7 +104,8 @@ def main():
             
             if time.time()-last_period_time >= period:
                 if origin_id and neighbors:
-                    print(f"sending periodic lsp")
+                    print()
+                    print(f"--------------- printing ls_info and sending lsp ---------------")
                     seq_num=lsp_seq(seq_num)
                 last_period_time=time.time()
                 
@@ -124,14 +141,17 @@ def main():
                         }
                         neighbors_info.append(f"{nodeId}={node_cost}")
                     neighbors=new_neighbors
+                    print()
+                    print(f"########## message from ON ##########")
                     print(f"msg received from on: {', '.join(neighbors_info)}")
+                    print()
                     sys.stdout.flush()
                     seq_num=lsp_seq(seq_num)
                     
                 elif s is udp_socket:
                     data,sender=udp_socket.recvfrom(1024)
                     if len(data)>= 7:
-                        origin_bytes,r_seq,num_n=struct.unpack('!cIH',data[:7])
+                        origin_bytes,seq_n,num_n=struct.unpack('!cIH',data[:7])
                         origin=origin_bytes.decode('ascii')
                         costs_received=[]
                         offset=7
@@ -142,9 +162,15 @@ def main():
                             cost1=int.from_bytes(data[offset+1:offset+3],'big',signed=True)
                             costs_received.append(f"{id1}={cost1}")
                             offset+=3
+                        if origin not in ls_info or seq_n>ls_info[origin]['seq']:
+                            ls_info[origin]={
+                                'seq': seq_n,
+                                'costs': costs_received
+                            }
 
-                        print(f"received lsp from node {origin},seq:{r_seq},neighbors:{num_n},costs: {', '.join(costs_received)}")
+                        print(f"received lsp from node {origin},seq:{seq_n},neighbors:{num_n},costs: {', '.join(costs_received)}")
                         sys.stdout.flush()
+
     except KeyboardInterrupt:
         print(f"shutdowm vn node")
     finally:
