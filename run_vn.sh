@@ -16,7 +16,7 @@ do
     LOG_FILE="vn_port_${PORT}.log"
 
     echo "Starting VN $((i + 1)) on port $PORT (logging to $LOG_FILE)..."
-    python3 vn-dummy.py "$ARG1" "$ARG2" "$THIRD_ARG" "$PORT" > "$LOG_FILE" 2>&1 &
+    python3 vn-graph.py "$ARG1" "$ARG2" "$THIRD_ARG" "$PORT" > "$LOG_FILE" 2>&1 &
 done
 
 echo "All 3 VN processes are running in the background."
