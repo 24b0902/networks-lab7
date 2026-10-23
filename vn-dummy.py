@@ -65,22 +65,23 @@ def main():
             for dest in info['costs'].keys():
                 all_nodes.add(dest)
 
+        #redundant
         for node in neighbors.keys():
             all_nodes.add(node)
 
         nodes = sorted(list(all_nodes))
-        if len(nodes) <= 1:
+        if len(nodes)<=1:
             return
 
         directed_graph = {node: {} for node in nodes}
 
         for node, data in neighbors.items():
-            if data['cost'] > 0 and node != origin_id:
+            if data['cost']>0 and node != origin_id:
                 directed_graph[origin_id][node] = data['cost']
 
         for node, info in ls_info.items():
             for dest, cost in info['costs'].items():
-                if cost > 0:
+                if cost>0:
                     directed_graph[node][dest] = cost
 
         graph = {node: {} for node in nodes}
@@ -141,10 +142,7 @@ def main():
         
         seq_num += 1
         valid_neighbors = {k: v for k, v in neighbors.items() if v['cost'] > 0 and k != origin_id}
-        
-        #store as a dictionary {nei_id: cost}
         local_costs = {nei_id: nei_data['cost'] for nei_id, nei_data in valid_neighbors.items()}
-        
         ls_info[origin_id] = {
             'seq': seq_num,
             'costs': local_costs
@@ -154,9 +152,9 @@ def main():
         packet += seq_num.to_bytes(4, 'big')
         packet += len(valid_neighbors).to_bytes(2, 'big')
         
-        for nei_id, cost in local_costs.items():
-            packet += nei_id.encode('ascii')
-            packet += cost.to_bytes(2, 'big', signed=True)
+        for nei_id, nei_data in valid_neighbors.items():
+                    packet += nei_id.encode('ascii')
+                    packet +=nei_data['cost'].to_bytes(2, 'big', signed=True)
             
         for nei_id, nei_data in valid_neighbors.items():
             dest_addr = (nei_data['ip'], nei_data['udp_port'])
@@ -232,13 +230,12 @@ def main():
                         origin_bytes, seq_n, num_n = struct.unpack('!cIH', data[:7])
                         origin = origin_bytes.decode('ascii')
                         
-                        immediate_sender = "unknown"
+                        relayer = "..."
                         for k, v in neighbors.items():
                             if (v['ip'], v['udp_port']) == sender_addr:
-                                immediate_sender = k
+                                relayer = k
                                 break
 
-                        # Parse costs into a dictionary {id1: cost1}
                         costs_received = {}
                         offset = 7
                         for _ in range(num_n):
@@ -247,7 +244,7 @@ def main():
                             id1 = data[offset:offset+1].decode('ascii')
                             cost1 = int.from_bytes(data[offset+1:offset+3], 'big', signed=True)
                             costs_received[id1] = cost1
-                            offset += 3
+                            offset+=3
                             
                         if origin not in ls_info or seq_n > ls_info[origin]['seq']:
                             ls_info[origin] = {
@@ -256,7 +253,7 @@ def main():
                             }
                             
                             costs_str = [f"{k}={v}" for k, v in costs_received.items()]
-                            print(f"Received info about Node {origin} (relayed by neighbor {immediate_sender}), seq:{seq_n}, costs: {', '.join(costs_str)}")
+                            print(f"Received info about Node {origin} (relayed by neighbor {relayer}), seq:{seq_n}, costs: {', '.join(costs_str)}")
                             
                             print_ls_info(origin_id, ls_info)
                             
@@ -266,7 +263,7 @@ def main():
                                 if dest_addr != sender_addr and nei_id != origin:
                                     udp_socket.sendto(data, dest_addr)
                         else:
-                            print(f"Received old/duplicate LSP originating from {origin} (via {immediate_sender}), ignoring.")
+                            print(f"Received old or duplicate LSP originating from {origin} (via {relayer}), ignoring.")
 
                         sys.stdout.flush()
 
