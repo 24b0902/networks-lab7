@@ -1,143 +1,213 @@
 
 ########## message from ON ##########
-msg received from on: A=0, B=3
+msg received from on: B=5, C=0
 
-Current Link State Information at node A:
-Node A: Seq: 1, Costs: B=3
+Current Link State Information at node C:
+# Costs from B to C
+-1
 
 Sent LSP (Seq: 1) to neighbors: ['B']
 
-received lsp from node B,seq:1,neighbors:2,costs: A=3, C=2
+Received info about Node B (relayed by neighbor B), seq:1, costs: A=3, C=5
+Current Link State Information at node C:
+# Costs from A to B, C
+-1	-1
+# Costs from B to C
+	5
+
+Received info about Node A (relayed by neighbor B), seq:1, costs: B=3
+Current Link State Information at node C:
+# Costs from A to B, C
+3	8
+# Costs from B to C
+	5
+
 
 --------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 2, Costs: B=3
-Node B: Seq: 1, Costs: A=3, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	8
+# Costs from B to C
+	5
 
 Sent LSP (Seq: 2) to neighbors: ['B']
 
-received lsp from node B,seq:2,neighbors:2,costs: A=3, C=2
+Received info about Node B (relayed by neighbor B), seq:2, costs: A=3, C=5
+Current Link State Information at node C:
+# Costs from A to B, C
+3	8
+# Costs from B to C
+	5
+
+Received info about Node A (relayed by neighbor B), seq:2, costs: B=3
+Current Link State Information at node C:
+# Costs from A to B, C
+3	8
+# Costs from B to C
+	5
+
 
 --------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 3, Costs: B=3
-Node B: Seq: 2, Costs: A=3, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	8
+# Costs from B to C
+	5
 
 Sent LSP (Seq: 3) to neighbors: ['B']
 
-received lsp from node B,seq:3,neighbors:2,costs: A=3, C=2
+Received info about Node B (relayed by neighbor B), seq:3, costs: A=3, C=5
+Current Link State Information at node C:
+# Costs from A to B, C
+3	8
+# Costs from B to C
+	5
 
---------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 4, Costs: B=3
-Node B: Seq: 3, Costs: A=3, C=2
-
-Sent LSP (Seq: 4) to neighbors: ['B']
+Received info about Node A (relayed by neighbor B), seq:3, costs: B=3
+Current Link State Information at node C:
+# Costs from A to B, C
+3	8
+# Costs from B to C
+	5
 
 
 ########## message from ON ##########
-msg received from on: A=0, B=5
+msg received from on: C=0
 
-Current Link State Information at node A:
-Node A: Seq: 5, Costs: B=5
-Node B: Seq: 3, Costs: A=3, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	-1
+# Costs from B to C
+	-1
 
-Sent LSP (Seq: 5) to neighbors: ['B']
+Sent LSP (Seq: 4) to neighbors: []
 
-received lsp from node B,seq:4,neighbors:2,costs: A=3, C=2
-received lsp from node B,seq:5,neighbors:2,costs: A=5, C=2
-
---------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 6, Costs: B=5
-Node B: Seq: 5, Costs: A=5, C=2
-
-Sent LSP (Seq: 6) to neighbors: ['B']
-
-received lsp from node B,seq:6,neighbors:2,costs: A=5, C=2
 
 --------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 7, Costs: B=5
-Node B: Seq: 6, Costs: A=5, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	-1
+# Costs from B to C
+	-1
 
-Sent LSP (Seq: 7) to neighbors: ['B']
+Sent LSP (Seq: 5) to neighbors: []
 
-received lsp from node B,seq:7,neighbors:2,costs: A=5, C=2
 
 --------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 8, Costs: B=5
-Node B: Seq: 7, Costs: A=5, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	-1
+# Costs from B to C
+	-1
+
+Sent LSP (Seq: 6) to neighbors: []
+
+
+--------------- printing ls_info and sending lsp ---------------
+Current Link State Information at node C:
+# Costs from A to B, C
+3	-1
+# Costs from B to C
+	-1
+
+Sent LSP (Seq: 7) to neighbors: []
+
+
+########## message from ON ##########
+msg received from on: B=2, C=0
+
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
 
 Sent LSP (Seq: 8) to neighbors: ['B']
 
-received lsp from node B,seq:8,neighbors:2,costs: A=5, C=2
+Received info about Node B (relayed by neighbor B), seq:8, costs: A=3, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
+
+Received info about Node A (relayed by neighbor B), seq:8, costs: B=3
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
+
 
 --------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 9, Costs: B=5
-Node B: Seq: 8, Costs: A=5, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
 
 Sent LSP (Seq: 9) to neighbors: ['B']
 
+Received info about Node B (relayed by neighbor B), seq:9, costs: A=3, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
 
-########## message from ON ##########
-msg received from on: A=0
-
-Current Link State Information at node A:
-Node A: Seq: 10, Costs: 
-Node B: Seq: 8, Costs: A=5, C=2
-
-Sent LSP (Seq: 10) to neighbors: []
-
-received lsp from node B,seq:9,neighbors:2,costs: A=5, C=2
-
---------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 11, Costs: 
-Node B: Seq: 9, Costs: A=5, C=2
-
-Sent LSP (Seq: 11) to neighbors: []
+Received info about Node A (relayed by neighbor B), seq:9, costs: B=3
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
 
 
 --------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 12, Costs: 
-Node B: Seq: 9, Costs: A=5, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
 
-Sent LSP (Seq: 12) to neighbors: []
+Sent LSP (Seq: 10) to neighbors: ['B']
 
+Received info about Node B (relayed by neighbor B), seq:10, costs: A=3, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
 
---------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 13, Costs: 
-Node B: Seq: 9, Costs: A=5, C=2
-
-Sent LSP (Seq: 13) to neighbors: []
-
-
---------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 14, Costs: 
-Node B: Seq: 9, Costs: A=5, C=2
-
-Sent LSP (Seq: 14) to neighbors: []
-
-
---------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 15, Costs: 
-Node B: Seq: 9, Costs: A=5, C=2
-
-Sent LSP (Seq: 15) to neighbors: []
+Received info about Node A (relayed by neighbor B), seq:10, costs: B=3
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
 
 
 --------------- printing ls_info and sending lsp ---------------
-Current Link State Information at node A:
-Node A: Seq: 16, Costs: 
-Node B: Seq: 9, Costs: A=5, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
 
-Sent LSP (Seq: 16) to neighbors: []
+Sent LSP (Seq: 11) to neighbors: ['B']
+
+Received info about Node B (relayed by neighbor B), seq:11, costs: A=3, C=2
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
+
+Received info about Node A (relayed by neighbor B), seq:11, costs: B=3
+Current Link State Information at node C:
+# Costs from A to B, C
+3	5
+# Costs from B to C
+	2
 
 empty data from on
